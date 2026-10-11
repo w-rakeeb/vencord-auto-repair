@@ -1,0 +1,38 @@
+name: Windows PowerShell checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      integration:
+        description: Run the official-installer fixture repair
+        type: boolean
+        default: false
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download and verify pinned installers
+        shell: powershell
+        run: ./Get-Installers.ps1
+      - name: Compatibility and lifecycle tests
+        shell: powershell
+        run: ./tests/Test-Vencord.ps1
+      - name: Watcher loop tests
+        shell: powershell
+        run: ./tests/Test-WatcherLoop.ps1
+      - name: Official installer integration test
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.integration }}
+        shell: powershell
+        run: ./tests/Test-RepairFlow.ps1
+      - name: Build distributable
+        shell: powershell
+        run: ./Build-Package.ps1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Vencord-Auto-Repair-Windows
+          path: dist/Vencord-Auto-Repair-Windows.zip

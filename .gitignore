@@ -1,0 +1,12 @@
+Installers/*
+!Installers/SOURCES.txt
+!Installers/checksums.sha256
+!Installers/LICENSE-Vencord.txt
+*.exe
+*.zip
+*.log
+dist/
+tests/fixture*/
+tests/repair-flow*/
+tests/loop-profile*/
+tests/loop/Watcher.ps1
